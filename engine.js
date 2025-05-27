@@ -13,7 +13,9 @@ const state = {
     health: 100,
     inventory: [],
     transcript: [],
-    visited: new Set()
+    visited: new Set(),
+    flags: {},
+    roomStates: {}
 };
 
 const viewport = $('#viewport');
@@ -74,11 +76,49 @@ const matchesConditions = cs => !cs || cs.every(cond => {
     if (cond.startsWith('item:')) {
         const [_, id, st] = cond.split(':');
         return isItemState(id, st);
-    }
-    if (cond.startsWith('has:'))
+    } else if (cond.startsWith('has:')) {
         return hasItem(cond.split(':')[1]);
-    if (cond.startsWith('not_has:'))
+    } else if (cond.startsWith('not_has:')) {
         return !hasItem(cond.split(':')[1]);
+    } else if (cond.startsWith('item_gt:')) {
+        const [_, itemId, prop, valueStr] = cond.split(':');
+        const value = parseInt(valueStr, 10);
+        return hasItem(itemId) && DATA.items[itemId] && DATA.items[itemId][prop] > value;
+    } else if (cond.startsWith('item_eq:')) {
+        const [_, itemId, prop, valueStr] = cond.split(':');
+        const item = DATA.items[itemId];
+        if (hasItem(itemId) && item && item[prop] !== undefined) {
+            if (typeof item[prop] === 'number') {
+                return item[prop] === parseInt(valueStr, 10);
+            }
+            return item[prop] === valueStr;
+        }
+        return false;
+    } else if (cond.startsWith('has_flag:')) {
+        const flagName = cond.substring('has_flag:'.length);
+        return !!state.flags[flagName];
+    } else if (cond.startsWith('not_has_flag:')) {
+        const flagName = cond.substring('not_has_flag:'.length);
+        return !state.flags[flagName];
+    } else if (cond.startsWith('at_location:')) {
+        const locId = cond.substring('at_location:'.length);
+        return state.loc === locId;
+    } else if (cond.startsWith('room_has_item_state:')) {
+        const [_, itemId, itemState] = cond.split(':');
+        const place = DATA.places[state.loc];
+        return place.items.includes(itemId) && DATA.items[itemId] && DATA.items[itemId].state === itemState;
+    } else if (cond.startsWith('room_feature_true:')) {
+        const parts = cond.split(':'); 
+        if (parts.length === 3) {
+            const roomName = parts[1];
+            const featureName = parts[2];
+            return state.roomStates[roomName] && state.roomStates[roomName][featureName] === true;
+        }
+        return false; 
+    } else if (cond.startsWith('player_knows_lösenord:')) {
+        const passwordId = cond.substring('player_knows_lösenord:'.length);
+        return !!state.flags['known_password_' + passwordId];
+    }
     return false;
 });
 
@@ -105,8 +145,11 @@ const doLook = (rawInput = '') => {
 
         // Check if the resolved targetItemId is a valid item and present in the location or inventory
         if (targetItemId && DATA.items[targetItemId] && (currentPlace.items.includes(targetItemId) || state.inventory.includes(targetItemId))) {
-            print(DATA.items[targetItemId].desc);
-            // Standard IF behavior: after describing a specific item, the action is complete.
+            const item = DATA.items[targetItemId];
+            print(item.desc);
+            if (item.story && typeof item.story === 'string' && item.story.trim() !== '') {
+                print(item.story); 
+            }
             return true;
         }
         // If "look <something>" was typed, but <something> isn't a recognized/present item,
@@ -249,22 +292,158 @@ const handleActions = raw => {
             continue;
         print(a.response);
         if (a.state_change) {
-            const {
-                item,
-                state: ns
-            } = a.state_change;
-            DATA.items[item].state = ns;
-            refreshStats();
+            // Start of new effects logic, ordered as planned
+            let stateChanged = false; // Flag to track if refreshStats is needed
+
+            // 1. Item removals
+            if (a.consume_item) {
+                if (state.inventory.includes(a.consume_item)) {
+                    state.inventory = state.inventory.filter(i => i !== a.consume_item);
+                    stateChanged = true;
+                }
+            }
+            if (a.consume_item_if_present) {
+                a.consume_item_if_present.forEach(itemId => {
+                    if (state.inventory.includes(itemId)) {
+                        state.inventory = state.inventory.filter(i => i !== itemId);
+                        stateChanged = true;
+                    }
+                });
+            }
+            if (a.remove_items) {
+                state.inventory = state.inventory.filter(i => !a.remove_items.includes(i));
+                stateChanged = true;
+            }
+
+            // 2. Item additions
+            if (a.add_item) {
+                if (!state.inventory.includes(a.add_item)) {
+                    state.inventory.push(a.add_item);
+                    stateChanged = true;
+                }
+            }
+            if (a.pickup_item) {
+                if (!state.inventory.includes(a.pickup_item)) {
+                    state.inventory.push(a.pickup_item);
+                    stateChanged = true;
+                }
+            }
+
+            // 3. State changes (item, player, room/world, flags)
+            if (a.state_change) {
+                if (a.state_change.item) { // Item state change
+                    const itemToChange = DATA.items[a.state_change.item];
+                    if (itemToChange) {
+                        if (a.state_change.state !== undefined) { // old style for item.state
+                            itemToChange.state = a.state_change.state;
+                            stateChanged = true;
+                        }
+                        if (a.state_change.key && a.state_change.value !== undefined) { // new style for any property
+                            itemToChange[a.state_change.key] = a.state_change.value;
+                            stateChanged = true;
+                        }
+                    }
+                } else if (a.state_change.room) { // Room feature state change
+                    const roomName = a.state_change.room;
+                    if (!state.roomStates[roomName]) {
+                        state.roomStates[roomName] = {};
+                    }
+                    state.roomStates[roomName][a.state_change.feature] = a.state_change.value;
+                    // stateChanged might not be needed if roomStates don't affect statsBar
+                } else if (a.state_change.world_event) { // Global flag / world event
+                    state.flags[a.state_change.world_event] = a.state_change.value;
+                    // stateChanged might not be needed if flags don't affect statsBar directly
+                } else if (a.state_change.room_item && a.state_change.property) { // Modifying a place's property (e.g., description_suffix)
+                    const placeToChange = DATA.places[a.state_change.room_item];
+                    if (placeToChange) {
+                        if (placeToChange[a.state_change.property] && typeof placeToChange[a.state_change.property] === 'string' && a.state_change.value_op === 'append') {
+                             placeToChange[a.state_change.property] += a.state_change.value;
+                        } else {
+                             placeToChange[a.state_change.property] = a.state_change.value;
+                        }
+                        // This modifies DATA, not state directly affecting statsBar, so stateChanged might be false
+                    }
+                }
+            }
+
+            if (a.set_player_state) { // Player state change (e.g. health, custom attributes)
+                state[a.set_player_state.key] = a.set_player_state.value;
+                if (a.set_player_state.key === 'health') stateChanged = true; // Assuming health is in stats
+                // Duration not handled
+            }
+            
+            if (a.set_flag){ // for "set_flag": "flag_name"
+                state.flags[a.set_flag] = true;
+                // stateChanged might not be needed if flags don't affect statsBar directly
+            }
+
+            // 4. Removals from room
+            if (a.remove_from_room) {
+                const place = DATA.places[state.loc];
+                if (place && place.items) {
+                    place.items = place.items.filter(i => i !== a.remove_from_room);
+                    // This modifies DATA.places, not directly state affecting statsBar unless items listed there.
+                    // doLook() will show changes if called.
+                }
+            }
+
+            // 5. Item reveals (original `a.reveals` for items in room)
+            if (a.reveals) {
+                a.reveals.forEach(it => {
+                    if (!DATA.places[state.loc].items.includes(it)) {
+                        DATA.places[state.loc].items.push(it);
+                        // Modifies DATA.places. doLook() will show.
+                    }
+                });
+            }
+
+            // 6. Exit reveals
+            if (a.reveals_exit) {
+                const place = DATA.places[state.loc];
+                if (place) {
+                    if (!place.exits) {
+                        place.exits = {};
+                    }
+                    place.exits[a.reveals_exit.direction] = a.reveals_exit.destination;
+                    // Modifies DATA.places. doSurvey() would show this.
+                }
+            }
+            
+            // 7. Handle `go` (forced movement)
+            let moved = false;
+            if (a.go) {
+                if (DATA.places[a.go]) { // Check if destination exists
+                    state.loc = a.go;
+                    moved = true;
+                    stateChanged = true; // Location change affects stats bar
+                } else {
+                    // Optionally print an error if destination in 'go' is invalid
+                    // print(`Fel: Ogiltig destination specificerad av 'go': ${a.go}`); 
+                }
+            }
+
+            // 8. Call refreshStats() if needed, and doLook() if moved
+            if (moved) {
+                doLook(); // Describe the new location (handles visited status)
+            }
+            if (stateChanged || moved) { // If inventory, health, or location changed (moved implies loc changed)
+                refreshStats();
+            }
+
+
+            // 9. Handle game ending
+            if (a.game_ending) {
+                if (a.game_ending.title) print(`\n--- ${a.game_ending.title} ---`);
+                if (a.game_ending.message) print(a.game_ending.message);
+                $('#commandInput').disabled = true;
+                // After a game ending, no further actions or default processing should occur.
+                return true; // Stops processing further actions in the list and command processing.
+            }
+            
+            return true; // Action handled successfully
         }
-        if (a.reveals) {
-            a.reveals.forEach(it => {
-                if (!DATA.places[state.loc].items.includes(it))
-                    DATA.places[state.loc].items.push(it);
-            });
-        }
-        return true;
     }
-    return false;
+    return false; // No action matched
 };
 
 const findVerb = words => {
