@@ -9,7 +9,7 @@ const DATA = {
 let SYNON_MAP = {};
 
 const state = {
-    loc: 'stugan',
+    loc: 'övergivet_torp',
     health: 100,
     inventory: [],
     transcript: [],
