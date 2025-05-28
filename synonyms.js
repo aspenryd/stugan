@@ -21,24 +21,24 @@ const synonyms = {
   drivved:        ['drivved', 'ved', 'träbitar', 'plankor'],
   rep:            ['rep', 'tamp', 'repet', 'näverrep', 'starkt rep'],
   flotte:         ['flotte', 'båt', 'farkost', 'träflotte'],
-  runstenbit:     ['runstenbit', 'stenbit', 'runbit', 'bit', 'runsten del 1', 'första runstenbiten'],
-  trälåda:        ['trälåda', 'låda', 'kista', 'låst låda', 'väderbiten låda'],
-  fotogen:        ['fotogen', 'fotogenflaska', 'bränsle', 'lampolja', 'flaska'],
+  runstenbit:     ['runstenbit', 'stenbit', 'runbit', 'bit', 'första runstenbiten', 'runsten del1'], // Updated
+  trälåda:        ['trälåda', 'låda', 'kista', 'låst låda', 'väderbiten låda', 'trälåda låst'], // Updated
+  fotogen:        ['fotogen', 'fotogenflaska', 'bränsle', 'lampolja', 'flaska', 'fotogen flaska'], // Updated
   sömnsvamp:      ['sömnsvamp', 'svamp', 'lilasvamp', 'sömnmedel'],
-  styrkesvamp:    ['styrkesvamp', 'svamp', 'rödsvamp', 'stärkandesvamp', 'kraftsvamp'],
-  runstenbitett:  ['runstenbitett', 'runstenbit', 'stenbit', 'bit', 'runsten del 2', 'andra runstenbiten', 'runstensbit ett'],
-  örnfjäder:      ['örnfjäder', 'fjäder', 'örnfjader', 'stor fjäder', 'vacker fjäder'],
-  linsbit:        ['linsbit', 'lins', 'glasbit', 'kristallglasbit', 'slipad linsbit', 'första linsbiten'],
-  linsbitett:     ['linsbitett', 'linsbit', 'lins', 'glasbit', 'andra linsbiten', 'linsbit ett'],
-  stjärnlins:     ['stjärnlins', 'lins', 'komplett lins', 'komplettstjärnlins', 'repad lins'],
-  bär:            ['bär', 'vissnabär', 'mörkabär', 'skrumpnabär', 'giftigabär'],
+  styrkesvamp:    ['styrkesvamp', 'svamp', 'rödsvamp', 'stärkandesvamp', 'kraftsvamp', 'stärkande svamp'], // Updated
+  runstenbitett:  ['runstenbitett', 'runstenbit', 'stenbit', 'bit', 'andra runstenbiten', 'runstensbit ett', 'runsten del2'], // Updated
+  örnfjäder:      ['örnfjäder', 'fjäder', 'örnfjader', 'stor fjäder', 'vacker fjäder', 'örn fjäder'], // Updated
+  linsbit:        ['linsbit', 'lins', 'glasbit', 'kristallglasbit', 'slipad linsbit', 'första linsbiten', 'stjärnlins bit1'], // Updated
+  linsbitett:     ['linsbitett', 'linsbit', 'lins', 'glasbit', 'andra linsbiten', 'linsbit ett', 'stjärnlins bit2'], // Updated
+  stjärnlins:     ['stjärnlins', 'lins', 'komplett lins', 'repad lins', 'komplett stjärnlins'], // Updated
+  bär:            ['bär', 'mörkabär', 'skrumpnabär', 'giftigabär', 'vissna bär'], // Updated
   yxa:            ['yxa', 'slitenyxa', 'vassyxa', 'träyxa'],
-  andningsskydd:  ['andningsskydd', 'skydd', 'mask', 'trasigtandningsskydd', 'gammalt skydd'],
-  livsknopp:      ['livsknopp', 'knopp', 'grönknopp', 'livets lilla knopp', 'växtknopp'],
-  runstenbittva:  ['runstenbittva', 'runstenbit', 'stenbit', 'bit', 'runsten del 3', 'tredje runstenbiten', 'runstensbit två'],
-  källvatten:     ['källvatten', 'vatten', 'heligtvatten', 'flaska med vatten', 'renande vatten'],
-  livsfrö:        ['livsfrö', 'frö', 'gyllenefrö', 'livetsfrö', 'magiskt frö'],
-  runsten:        ['runsten', 'samladrusten', 'komplettrunsten', 'lysandesten', 'symbolsten'],
+  andningsskydd:  ['andningsskydd', 'skydd', 'mask', 'gammalt skydd', 'trasigt andningsskydd'], // Updated
+  livsknopp:      ['livsknopp', 'knopp', 'grönknopp', 'växtknopp', 'livets lilla knopp'], // Updated
+  runstenbittva:  ['runstenbittva', 'runstenbit', 'stenbit', 'bit', 'tredje runstenbiten', 'runstensbit två', 'runsten del3'], // Updated
+  källvatten:     ['källvatten', 'vatten', 'heligtvatten', 'flaska med vatten', 'renande vatten', 'heligt vatten flaska'], // Updated
+  livsfrö:        ['livsfrö', 'frö', 'gyllenefrö', 'magiskt frö', 'livets frö'], // Updated
+  runsten:        ['runsten', 'komplettrunsten', 'lysandesten', 'symbolsten', 'samlad runsten'], // Updated
 
   // --- Custom Exit Directions ---
   "tillbaka": ["tillbaka", "gå tillbaka", "återvänd"],
