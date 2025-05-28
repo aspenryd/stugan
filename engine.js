@@ -232,50 +232,50 @@ const doTake = raw => {
     return true;
 };
 
-const doMove = cmd => { // cmd is the raw normalized input, e.g., "gå norr", "norr", "n"
-    const words = cmd.split(/\s+/);
-    let foundDir = null;
+const doMove = cmd => { // cmd is the raw normalized input, e.g., "gå över sjön", "klättra ner i nästet"
+    const place = DATA.places[state.loc];
+    if (!place.exits || Object.keys(place.exits).length === 0) {
+        print('Det finns inga uppenbara vägar härifrån.');
+        return;
+    }
 
-    // Iterate over words to find a recognized direction
-    for (const word of words) {
-        // Check if the word itself is a direction (e.g. "norr") or a synonym ("n")
-        // SYNON_MAP should provide the canonical direction name (e.g. SYNON_MAP['n'] -> 'norr')
-        const canonicalWord = SYNON_MAP[word]; 
-        if (['norr', 'söder', 'öster', 'väster', 'upp', 'ned'].includes(canonicalWord)) {
-            foundDir = canonicalWord;
+    const availableExitKeys = Object.keys(place.exits);
+    let chosenDirection = null;
+
+    // Iterate through each available exit key for the current room
+    for (const exitKey of availableExitKeys) {
+        // Get the list of synonyms for this exitKey directly from DATA.synonyms
+        const synonymsForExit = DATA.synonyms[exitKey] || [exitKey]; // Fallback to the key itself
+
+        if (synonymsForExit.includes(cmd)) {
+            chosenDirection = exitKey;
             break;
         }
     }
-    
-    // Fallback for cases like "gå norrut" where "norr" is part of the word,
-    // or if the synonym mapping isn't perfect for all command structures.
-    // This ensures existing behavior like "gå norr" still works if "norr" isn't a standalone word in `words` that maps directly.
-    if (!foundDir) {
-        // This will catch 'norr' in 'gå norr', assuming 'gå' isn't a mapped direction.
-        // It also covers cases where SYNON_MAP might not yet be populated with single letters,
-        // though the next plan step is to update SYNON_MAP.
-        foundDir = ['norr', 'söder', 'öster', 'väster', 'upp', 'ned'].find(d => cmd.includes(d));
-    }
 
-    if (!foundDir) {
-        print('Vart vill du gå?');
-        return;
-    }
+    if (chosenDirection) {
+        const destination = place.exits[chosenDirection];
+        // Future: Add condition checks for exits here if exits can have conditions
+        state.loc = destination;
+        doLook(); // doLook will handle visited status correctly
+        refreshStats();
+    } else {
+        // Check if the input might have been a standard direction that's just not available.
+        // SYNON_MAP[cmd] could map "gå norr" to "norr" or "n" to "norr".
+        // Or cmd itself could be "norr" if user typed that.
+        const canonicalInputAttempt = SYNON_MAP[cmd] || cmd; 
 
-    const place = DATA.places[state.loc];
-    const dest = place.exits[foundDir]; // Use the resolved direction
-
-    if (!dest) {
-        print(`Du kan inte gå ${foundDir}.`);
-        return;
+        if (['norr', 'söder', 'öster', 'väster', 'upp', 'ned'].includes(canonicalInputAttempt) && !availableExitKeys.includes(canonicalInputAttempt) ) {
+             print(`Du kan inte gå ${canonicalInputAttempt} härifrån.`);
+        } else {
+            // More generic message if it's not a recognized standard direction that's unavailable.
+            print('Vart vill du gå? Försök med en tydligare riktning eller beskrivning av vägen.');
+        }
     }
-    state.loc = dest;
-    doLook(); // doLook will handle visited status correctly
-    refreshStats();
 };
 
 const doInventory = () => print(`Du bär: ${inventoryDisplay() || 'inget'}`);
-const doHelp = () => print('Kommandon: titta, ta, gå, inventering, tänd/släck ficklampa, hjälp, sluta');
+const doHelp = () => print('Kommandon: titta, ta, gå, inventering, tänd/släck lykta, hjälp, sluta');
 const doQuit = () => {
     print('Spelet avslutat.');
     $('#commandInput').disabled = true;
@@ -447,27 +447,47 @@ const handleActions = raw => {
 };
 
 const findVerb = words => {
-    // Map all words to their canonical forms via SYNON_MAP.
-    // SYNON_MAP should already be populated with single letters mapping to directions (e.g., SYNON_MAP['n'] = 'norr')
-    // and action words to canonical verbs (e.g., SYNON_MAP['gå'] = 'move').
-    const mappedWords = words.map(w => SYNON_MAP[w]);
+    // words is an array of normalized words from user input
+    const mappedWords = words.map(w => SYNON_MAP[w]); 
+    const fullNormalizedCmd = words.join(' '); 
 
-    // First, try to find a primary verb (look, take, move, etc.)
-    let verb = mappedWords.find(v => ['look', 'survey', 'take', 'move', 'inventory', 'light', 'help', 'quit', 'describe'].includes(v));
+    // 1. Check for primary action verbs (look, take, etc.)
+    // SYNON_MAP maps individual synonym words to their canonical verb.
+    let verb = mappedWords.find(v => ['look', 'survey', 'take', 'move', 'inventory', 'light', 'help', 'quit', 'describe', 'use', 'combine'].includes(v));
     if (verb) {
-        return verb;
+        // If 'move' is identified from a single generic word like 'gå', 
+        // it's crucial to let doMove try to match the fullNormalizedCmd against custom exits first.
+        // So, we return 'move', and doMove will determine if it's a custom or standard directional move.
+        if (verb === 'move') {
+            return 'move'; 
+        }
+        return verb; // For non-'move' verbs, return immediately.
+    }
+    
+    // 2. Check if any *individual word* is a standard direction (n, s, norr, söder etc.)
+    // This covers cases like "n", or "gå norr" where "norr" is picked up.
+    const isStandardDirectionWord = mappedWords.some(mappedWord => ['norr', 'söder', 'öster', 'väster', 'upp', 'ned'].includes(mappedWord));
+    if (isStandardDirectionWord) {
+        return 'move';
     }
 
-    // If no direct verb was found, check if any of the (mapped) words is a known direction.
-    // If so, interpret this as a 'move' command.
-    // This allows inputs like "n" (mapped to "norr") to be treated as "move".
-    const isDirection = mappedWords.some(mappedWord => ['norr', 'söder', 'öster', 'väster', 'upp', 'ned'].includes(mappedWord));
-    if (isDirection) {
-        return 'move';
+    // 3. Check if the *full normalized command string* matches a synonym for any available custom exit.
+    // This allows "klättra ner i nästet" (if it's a synonym for an exit key) to be recognized as a 'move' command.
+    const place = DATA.places[state.loc];
+    if (place.exits) { 
+        const availableExitKeys = Object.keys(place.exits);
+        for (const exitKey of availableExitKeys) {
+            // Get synonyms directly from DATA.synonyms using the actual exit key
+            const synonymsForExit = DATA.synonyms[exitKey] || [exitKey]; 
+            if (synonymsForExit.includes(fullNormalizedCmd)) {
+                return 'move'; 
+            }
+        }
     }
 
     return undefined; // No recognized verb or direction found
 };
+
 const process = input => {
 
     if (!input.trim())
