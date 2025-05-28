@@ -511,7 +511,7 @@ const process = input => {
         doTake(cmd);
         break;
     case 'light':
-        handleActions(input);
+        //handleActions(input);
         break;
     case 'inventory':
         doInventory();

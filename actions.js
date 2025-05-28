@@ -53,20 +53,6 @@ const actions = {
     }
     // Fler generella handlingar för att använda/kombinera föremål kan läggas till här.
   ],
-  "övergivet_torp": [
-    {
-      "pattern": "(ta|plocka upp) dagbok",
-      "response": "Du tar den slitna dagboken.",
-      "pickup_item": "dagbok",
-      "remove_from_room": "dagbok"
-    },
-    {
-      "pattern": "(ta|plocka upp) lykta",
-      "response": "Du tar den rostiga lyktan.",
-      "pickup_item": "lykta",
-      "remove_from_room": "lykta"
-    }
-  ],
   "uråldriga_eken": [
     {
       "pattern": "(ta|plocka upp|dra loss) nyckel",
