@@ -10,7 +10,7 @@ const places = {
    | |  | |
    |_|__|_|
     `,
-    "items": ["dagbok", "rostig_lykta"],
+    "items": ["dagbok", "lykta"],
     "exits": { "ut": "glömda_stigen" }
   },
   "glömda_stigen": {
@@ -29,7 +29,7 @@ const places = {
     дърво
    /____\\
     `,
-    "items": ["uråldrig_nyckel"],
+    "items": ["nyckel"],
     "exits": { "västerut": "glömda_stigen", "österut": "vattendragets_källa", "nedåt": "rotkällare" }
   },
   "vattendragets_källa": {
@@ -53,14 +53,14 @@ const places = {
   "murkna_grottan_första_rummet": {
     "desc": "Grottans första rum. Det är becksvart här inne.",
     "longDesc": "Du befinner dig i grottans första kammare. Mörkret är kompakt och det enda du hör är ljudet av droppande vatten. Utan en ljuskälla är det svårt att urskilja några detaljer.",
-    "conditions": ["not_has_item_state:rostig_lykta:Tänd"], // Exempel på hur man kan försvåra
-    "items": ["glimmande_mossa_klump"],
+    "conditions": ["not_has_item_state:lykta:Tänd"], // Exempel på hur man kan försvåra
+    "items": ["mossklump"],
     "exits": { "ut": "murkna_grottan_ingång", "djupare": "kristallgrottan" }
   },
   "kristallgrottan": {
     "desc": "En grotta vars väggar skimrar av otaliga kristaller.",
     "longDesc": "Ljuset från din lykta (eller den glimmande mossan) reflekteras i tusentals kristaller som täcker väggar och tak. Grottan gnistrar som en stjärnhimmel. Det är vackert, men gångarna är smala och förrädiska.",
-    "items": ["renande_kristall"],
+    "items": ["kristall"],
     "exits": { "tillbaka": "murkna_grottan_första_rummet", "ner": "underjordisk_sjö_strand" }
   },
   "underjordisk_sjö_strand": {
@@ -72,13 +72,13 @@ const places = {
    "glömda_altarets_ö": {
     "desc": "En liten ö mitt i den underjordiska sjön med ett förfallet altare.",
     "longDesc": "Mitt på den underjordiska sjön ligger en liten, dyster ö. Här står ett gammalt stenaltare, täckt av alger och fukt. Det verkar som om något saknas på altarets yta.",
-    "items": ["runsten_del1"],
+    "items": ["runstenbit"],
     "exits": { "tillbaka_över_sjön": "underjordisk_sjö_strand" }
   },
   "rotkällare": {
     "desc": "En trång och jordig rotkällare under den uråldriga eken.",
     "longDesc": "Du har klättrat ner i en trång och mörk rotkällare under den gamla ekens rötter. Det luktar starkt av jord och fukt. Rötterna slingrar sig längs väggarna som tjocka ormar. Det är svårt att röra sig här nere.",
-    "items": ["trälåda_låst"], // Behöver uråldrig_nyckel
+    "items": ["trälåda"], // Behöver uråldrig_nyckel
     "exits": { "upp": "uråldriga_eken", "gång": "viskande_gångarna_ingång" }
   },
   "viskande_gångarna_ingång": {
@@ -96,7 +96,7 @@ const places = {
   "svampdungen": {
     "desc": "En dunge fylld med självlysande svampar i olika färger.",
     "longDesc": "Grottan öppnar sig till en större sal där marken är täckt av stora, självlysande svampar. Deras mjuka sken i blått, grönt och violett lyser upp rummet och skapar ett drömskt landskap. Vissa svampar pulserar med ett eget ljus.",
-    "items": ["sömnsvamp", "stärkande_svamp"],
+    "items": ["sömnsvamp", "styrkesvamp"],
     "exits": { "söder": "viskande_gångarna_korsväg" }
   },
   "maskens_håla_mynning": {
@@ -119,7 +119,7 @@ const places = {
      ROOTS
     //   \\
     `,
-    "items": ["runsten_del2"],
+    "items": ["runstenbitett"],
     "exits": { "tillbaka": "maskens_håla_inre", "uppåt_via_rötter": "den_tysta_gläntan" }
   },
   "klippstigen": {
@@ -137,7 +137,7 @@ const places = {
   "örnens_näste_centrum": {
     "desc": "Mitten av det stora örnnästet.",
     "longDesc": "Du befinner dig i mitten av det stora, rufsiga örnnästet. Det luktar fågel och torra kvistar. Här, bland dun och små benrester, ligger en vacker fjäder och en liten, sliten läderpung.",
-    "items": ["örn_fjäder", "stjärnlins_bit1"],
+    "items": ["örnfjäder", "linsbit"],
     "exits": { "klättra_upp_ur_nästet": "örnens_näste_kant" }
   },
   "vindpinade_toppen": {
@@ -155,7 +155,7 @@ const places = {
   "gamla_observatoriet_ruin": {
     "desc": "Inne i det raserade observatoriet. Taket är borta.",
     "longDesc": "Du står inne i det som en gång var observatoriets huvudkupol. Taket har rasat in och stjärnorna lyser klart ovanför dig. En stor, rostig anordning i mitten ser ut att ha hållit en stor lins en gång i tiden. På väggen finns en urblekt stjärnkarta.",
-    "items": ["stjärnlins_bit2"], // Behöver kombineras
+    "items": ["linsbitett"], // Behöver kombineras
     "exits": { "nedför_trappan": "gamla_observatoriets_fot", "studera_stjärnkartan": "stjärnkartans_rum_ingång" } // Kräver komplett stjärnlins
   },
   "den_tysta_gläntan": {
@@ -167,13 +167,13 @@ const places = {
   "förvridna_trädens_stig": {
     "desc": "En stig kantad av förvridna, taggiga träd.",
     "longDesc": "Stigen leder dig djupare in i en del av skogen där träden är förvridna och taggiga. Grenarna sträcker sig som klor och luften är tung. Det känns som om skogen själv är sjuk här.",
-    "items": ["vissna_bär"], // Kanske giftiga
+    "items": ["bär"], // Kanske giftiga
     "exits": { "tillbaka_gläntan": "den_tysta_gläntan", "genom_snåren": "giftträskets_kant" } // Kräver kanske yxa
   },
   "giftträskets_kant": {
     "desc": "Kanten av ett träsk med bubblande, giftiggrönt vatten.",
     "longDesc": "Du står vid randen av ett stort träsk. Vattnet är tjockt, grönt och bubblar sakta. En stickande, kemisk lukt stiger upp och får dina ögon att tåras. Det ser inte ut att finnas någon säker väg över.",
-    "items": ["trasigt_andningsskydd"],
+    "items": ["andningsskydd"],
     "exits": { "tillbaka_stigen": "förvridna_trädens_stig", "försök_korsa": "giftträsket_mitt" } // Kräver skydd eller rening
   },
   "giftträsket_mitt": {
@@ -185,7 +185,7 @@ const places = {
   "den_sårade_väktarens_glänta": {
     "desc": "En glänta där ett enormt, uråldrigt träd sakta dör.",
     "longDesc": "Du når en glänta där ett gigantiskt, uråldrigt träd står. Det är tydligt att trädet lider – barken är sprucken, grenarna hänger slappt och en mörk sörja sipprar från dess stam. Det är Skogens Väktare, och den är döende.",
-    "items": ["livets_lilla_knopp"], // Om man lyckas hjälpa det lite
+    "items": ["livsknopp"], // Om man lyckas hjälpa det lite
     "exits": { "tillbaka_träsket": "giftträsket_mitt", "hemlig_gång": "heliga_lundens_port" } // Öppnas om väktaren hjälps
   },
   "stjärnkartans_rum_ingång": {
@@ -197,7 +197,7 @@ const places = {
   "stjärnkartans_rum_inre": {
     "desc": "Ett runt rum med en projektion av stjärnhimlen i taket.",
     "longDesc": "Du är i ett cirkulärt rum. I taket projiceras en komplex och rörlig stjärnhimmel. I mitten av rummet finns en piedestal med fördjupningar som liknar stjärnkonstellationer.",
-    "items": ["runsten_del3"],
+    "items": ["runstenbittva"],
     "exits": { "ut_igen": "stjärnkartans_rum_ingång", "rör_piedestalen": "spegelportalens_kammare" } // Kräver att man placerar runstenar?
   },
   "spegelportalens_kammare": {
@@ -215,7 +215,7 @@ const places = {
   "heliga_lunden": {
     "desc": "En fridfull, orörd lund där luften vibrerar av magi.",
     "longDesc": "Du kliver in i en lund av ojämförlig skönhet. Luften är ren och fylld av en söt doft. Solstrålar silar ner genom lövverket och skapar ett gyllene ljus. Gamla träd med silverglänsande bark står i en cirkel. I mitten finns en mossbelagd stig.",
-    "items": ["livets_frö"],
+    "items": ["livsfrö"],
     "exits": { "ut_porten": "heliga_lundens_port", "följ_stigen": "prövningens_stig" }
   },
   "prövningens_stig": {
