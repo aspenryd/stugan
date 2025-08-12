@@ -5,7 +5,7 @@ const synonyms = {
   survey:    ['titta runt', 'utforska', 'rundblick', 'runt', 'se dig omkring', 'kolla runt'],
   light:     ['tänd', 'tända', 'släck', 'släcka', 'ljus', 'lys', 'belys', 'skingra mörkret'],
   inventory: ['inventering', 'inventera', 'inventarium', 'saker', 'bagage', 'föremål', 'ryggsäck', 'väska', 'kappsäck', 'grejer', 'vad har jag'],
-  move:      ['gå', 'gå till', 'gå söderut', 'gå norrut', 'gå österut', 'gå västerut', 'gå upp', 'gå ner', 'förflytta', 'kliv', 'spring', 'löp', 'förflytta sig', 'marschera', 'promenera'],
+  move:      ['gå', 'gå till', 'förflytta', 'kliv', 'spring', 'löp', 'förflytta sig', 'marschera', 'promenera', 'klättra'],
   help:      ['hjälp', '?', 'hjälp!', 'instruktioner', 'vad gör jag'],
   describe:  ['beskriv','granska', 'berätta mer', 'detaljer'],
   quit:      ['sluta', 'avsluta', 'lämna', 'exit', 'ge upp', 'stäng av'],
@@ -80,5 +80,13 @@ const synonyms = {
   "ut_porten": ["ut genom porten", "lämna lunden", "gå ut porten"],
   "följ_stigen": ["följ stigen", "gå längs stigen", "ta stigen"],
   "framåt_efter_prövning": ["framåt efter prövning", "fortsätt efter prövningen", "gå vidare"],
-  "öppna_dörren": ["öppna dörren", "gå genom dörren", "passera dörren"]
+  "öppna_dörren": ["öppna dörren", "gå genom dörren", "passera dörren"],
+
+  // --- Standard Directions ---
+  norr: ['n', 'norrut'],
+  söder: ['s', 'söderut'],
+  öster: ['ö', 'e', 'österut'],
+  väster: ['v', 'w', 'västerut'],
+  upp: ['u', 'uppåt', 'klättra upp'],
+  ned: ['d', 'ner', 'nedåt', 'klättra ner']
 };
