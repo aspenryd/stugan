@@ -6,8 +6,12 @@ const vm = require('vm');
 const scriptPath = path.resolve(__dirname, '../webfiles/core.js');
 
 // Read the script file
-const scriptCode = fs.readFileSync(scriptPath, 'utf8');
+let scriptCode = fs.readFileSync(scriptPath, 'utf8');
 
-// Execute the script in the current JSDOM global context.
-// This will attach GameCore to the window object in the test environment.
+// Modify the script to attach GameCore to the global object.
+// This is a workaround for the fact that 'const' at the top level of a script
+// executed by vm.runInThisContext does not create a global variable.
+scriptCode = scriptCode.replace('const GameCore', 'global.GameCore');
+
+// Execute the modified script in the current JSDOM global context.
 vm.runInThisContext(scriptCode);
