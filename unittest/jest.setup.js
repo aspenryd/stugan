@@ -1,6 +1,5 @@
 const fs = require('fs');
 const path = require('path');
-const vm = require('vm');
 
 // Path to the script to be tested
 const scriptPath = path.resolve(__dirname, '../webfiles/core.js');
@@ -8,10 +7,11 @@ const scriptPath = path.resolve(__dirname, '../webfiles/core.js');
 // Read the script file
 let scriptCode = fs.readFileSync(scriptPath, 'utf8');
 
-// Modify the script to attach GameCore to the global object.
-// This is a workaround for the fact that 'const' at the top level of a script
-// executed by vm.runInThisContext does not create a global variable.
-scriptCode = scriptCode.replace('const GameCore', 'global.GameCore');
+// This is a workaround for JSDOM environments where 'const' at the top level
+// of a script doesn't attach to the global object. We are explicitly assigning
+// GameCore to the global scope so it's available in all test files.
+scriptCode = scriptCode.replace(/^const GameCore\s*=\s*/, 'global.GameCore = ');
 
-// Execute the modified script in the current JSDOM global context.
-vm.runInThisContext(scriptCode);
+// Using eval to execute the script in the global scope of the test runner.
+// This makes GameCore available to all test suites.
+eval(scriptCode);
