@@ -25,14 +25,17 @@ let state = {};
 
 // --- UI Rendering Functions ---
 
-// Prints a single message to the viewport.
+// Prints a block of text to the viewport, preserving whitespace.
 const print = msg => {
-    const p = document.createElement('p');
+    const pre = document.createElement('pre');
     // Sanitize text to prevent accidental HTML injection
-    p.textContent = msg;
-    viewport.appendChild(p);
-    // Auto-scroll to the latest message
-    viewport.scrollTop = viewport.scrollHeight;
+    pre.textContent = msg;
+    viewport.appendChild(pre);
+    // Auto-scroll to the latest message.
+    // The timeout ensures the DOM has updated before we try to scroll.
+    setTimeout(() => {
+        viewport.scrollTop = viewport.scrollHeight;
+    }, 0);
 };
 
 // Generates the string for the inventory part of the status bar.
@@ -64,8 +67,10 @@ const processInput = (input) => {
     // The core gives us a JSON-friendly state, so we must re-hydrate the Set.
     state.visited = new Set(state.visited);
 
-    // Render all output lines returned by the core.
-    result.output.forEach(line => print(line));
+    // Render all output lines returned by the core as a single block.
+    if (result.output && result.output.length > 0) {
+        print(result.output.join('\n'));
+    }
 
     // Update the UI to reflect the new state.
     refreshStats();
@@ -95,7 +100,9 @@ const startGame = () => {
     commandInput.focus();
 
     // 4. Print the initial room description and stats.
-    initResult.output.forEach(line => print(line));
+    if (initResult.output && initResult.output.length > 0) {
+        print(initResult.output.join('\n'));
+    }
     refreshStats();
 };
 
