@@ -397,6 +397,7 @@ const GameCore = (() => {
         if (!input.trim()) {
             return { newState, output, shouldQuit: false };
         }
+        output.push(``);
         output.push(`> ${input}`);
 
         // First, try to match a declarative action.
