@@ -64,7 +64,11 @@
       0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; }
       20%, 24%, 55% { opacity: .96; }
     }
-    .viewport pre { animation: flicker 7s infinite; }
+    .viewport pre {
+      animation: flicker 7s infinite;
+      white-space: pre-wrap; /* Ensure wrapping */
+      word-wrap: break-word; /* Break long words */
+    }
     .input-bar {
       position: fixed;
       bottom: 0;

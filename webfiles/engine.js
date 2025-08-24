@@ -28,9 +28,20 @@ let state = {};
 // Prints a block of text to the viewport, preserving whitespace.
 const print = msg => {
     const pre = document.createElement('pre');
-    // Sanitize text to prevent accidental HTML injection
-    pre.textContent = msg;
-    viewport.appendChild(pre);
+    pre.textContent = msg; // Sanitize text
+
+    // Create or find the scroll buffer element
+    let buffer = viewport.querySelector('.scroll-buffer');
+    if (!buffer) {
+        buffer = document.createElement('div');
+        buffer.className = 'scroll-buffer';
+        buffer.style.height = '2rem'; // Adds some empty space at the bottom
+        viewport.appendChild(buffer);
+    }
+
+    // Insert the new message *before* the buffer
+    viewport.insertBefore(pre, buffer);
+
     // Auto-scroll to the latest message.
     // The timeout ensures the DOM has updated before we try to scroll.
     setTimeout(() => {

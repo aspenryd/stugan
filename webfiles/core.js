@@ -249,7 +249,38 @@ const GameCore = (() => {
         return { newState: state, output: [`Du bär: ${invDisplay || 'inget'}`] };
     };
 
-    const doHelp = (state) => ({ newState: state, output: ['Kommandon: titta, ta, gå, inventering, tänd/släck lykta, hjälp, sluta'] });
+    const doHelp = (state) => {
+        const place = DATA.places[state.loc];
+        const exits = Object.keys(place.exits || {});
+        const items = place.items || [];
+
+        const output = [
+            '--- Hjälp ---',
+            'Skriv kommandon för att interagera med världen. Försök med enkla verb och substantiv.',
+            'Exempel:',
+            '  titta            - Beskriver rummet igen.',
+            '  titta på <sak>   - Undersök en specifik sak.',
+            '  ta <sak>         - Plocka upp en sak.',
+            '  gå <riktning>    - Förflytta dig (t.ex. "gå norrut").',
+            '  inventering      - Visa vad du bär på.',
+            '  hjälp            - Visar denna hjälptext.',
+            '  sluta            - Avslutar spelet.',
+            ''
+        ];
+
+        if (exits.length > 0) {
+            output.push(`Du kan se vägar som leder: ${exits.join(', ')}.`);
+        }
+        if (items.length > 0) {
+            const itemNames = items.map(id => DATA.items[id]?.name || id.charAt(0).toUpperCase() + id.slice(1));
+            output.push(`Du ser några saker här: ${itemNames.join(', ')}.`);
+        } else {
+            output.push('Du ser inget du kan plocka upp just nu, men prova att titta närmare på omgivningen.');
+        }
+        output.push('---');
+
+        return { newState: state, output };
+    };
 
     const doQuit = (state) => ({ newState: state, output: ['Spelet avslutat.'], shouldQuit: true });
 
