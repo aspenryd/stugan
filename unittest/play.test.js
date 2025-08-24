@@ -40,7 +40,7 @@ describe('Playthrough Tests', () => {
         expect(initialOutput).toContain('小屋');
 
         // Test movement. The command for an exit is the exit key itself.
-        const moveResult = GameCore.processCommand(result.newState, DATA, 'ut');
+        const moveResult = GameCore.processCommand(result.newState, DATA, 'norr');
         expect(moveResult.newState.loc).toBe('glömda_stigen');
         const moveOutput = moveResult.output.join('\n');
         expect(moveOutput).toContain('Du befinner dig på en övervuxen och nästan osynlig stig.');
@@ -58,24 +58,24 @@ describe('Playthrough Tests', () => {
     it('should handle a multi-step navigation path', () => {
         let state = GameCore.init(DATA).newState;
 
-        state = GameCore.processCommand(state, DATA, 'ut').newState;
+        state = GameCore.processCommand(state, DATA, 'norr').newState;
         expect(state.loc).toBe('glömda_stigen');
 
-        state = GameCore.processCommand(state, DATA, 'framåt').newState;
+        state = GameCore.processCommand(state, DATA, 'norr').newState;
         expect(state.loc).toBe('uråldriga_eken');
 
-        state = GameCore.processCommand(state, DATA, 'österut').newState;
+        state = GameCore.processCommand(state, DATA, 'öster').newState;
         expect(state.loc).toBe('vattendragets_källa');
     });
 
     it('should show a different description based on a condition', () => {
         let state = GameCore.init(DATA).newState;
         // Navigate to the cave entrance
-        state = GameCore.processCommand(state, DATA, 'ut').newState;
-        state = GameCore.processCommand(state, DATA, 'framåt').newState;
-        state = GameCore.processCommand(state, DATA, 'österut').newState;
-        state = GameCore.processCommand(state, DATA, 'söderut').newState;
-        state = GameCore.processCommand(state, DATA, 'österut').newState;
+        state = GameCore.processCommand(state, DATA, 'norr').newState;
+        state = GameCore.processCommand(state, DATA, 'norr').newState;
+        state = GameCore.processCommand(state, DATA, 'öster').newState;
+        state = GameCore.processCommand(state, DATA, 'söder').newState;
+        state = GameCore.processCommand(state, DATA, 'öster').newState;
 
         expect(state.loc).toBe('murkna_grottan_ingång');
 
