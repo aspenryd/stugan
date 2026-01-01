@@ -6,7 +6,7 @@ const GameCore = (() => {
 
     // Creates a fresh state object for a new game.
     const createInitialState = () => ({
-        loc: 'övergivet_torp',
+        loc: 'stugan',
         health: 100,
         inventory: [],
         visited: [], // JSON-friendly array
@@ -327,9 +327,9 @@ const GameCore = (() => {
                     const placeToChange = DATA.places[a.state_change.room_item];
                     if (placeToChange) {
                         if (placeToChange[a.state_change.property] && typeof placeToChange[a.state_change.property] === 'string' && a.state_change.value_op === 'append') {
-                             placeToChange[a.state_change.property] += a.state_change.value;
+                            placeToChange[a.state_change.property] += a.state_change.value;
                         } else {
-                             placeToChange[a.state_change.property] = a.state_change.value;
+                            placeToChange[a.state_change.property] = a.state_change.value;
                         }
                     }
                 }

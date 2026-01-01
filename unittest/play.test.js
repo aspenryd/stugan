@@ -2,12 +2,21 @@ const fs = require('fs');
 const path = require('path');
 
 // Helper function to load and execute a script in the test's context
-const loadScript = (fileName) => {
+const loadScript = (fileName, overrideName = null) => {
     const scriptPath = path.resolve(__dirname, `../webfiles/${fileName}`);
     let scriptCode = fs.readFileSync(scriptPath, 'utf8');
-    const varName = fileName.split('.')[0];
+    const varName = overrideName || fileName.split('.')[0];
+    // Replace const varName = ... with global.varName = ...
+    // using a regex that matches the start of the file or line
     scriptCode = scriptCode.replace(new RegExp(`^const ${varName}\\s*=\\s*`), `global.${varName} = `);
-    eval(scriptCode);
+
+    // Safety check: ensure we are not assigning to undefined if the regex failed
+    // (This might happen if the file variable name doesn't match the filename/override)
+    try {
+        eval(scriptCode);
+    } catch (e) {
+        console.error(`Error loading script ${fileName}:`, e);
+    }
 };
 
 // Load all game data scripts.
@@ -16,8 +25,9 @@ loadScript('places.js');
 loadScript('items.js');
 loadScript('synonyms.js');
 loadScript('actions.js');
+loadScript('core.js', 'GameCore');
 
-describe('Playthrough Tests', () => {
+describe('Stugan Game Tests', () => {
     let DATA;
 
     beforeEach(() => {
@@ -31,60 +41,49 @@ describe('Playthrough Tests', () => {
         GameCore.buildSynonymMap(DATA.synonyms);
     });
 
-    it('should start the game, display ASCII art, and allow movement', () => {
+    it('should start at stugan and display description', () => {
         const result = GameCore.init(DATA);
-        expect(result.newState.loc).toBe('övergivet_torp');
+        expect(result.newState.loc).toBe('stugan');
+        const output = result.output.join(' ');
+        expect(output.toLowerCase()).toContain('stockved');
+    });
 
-        // Check for ASCII art in the initial output
-        const initialOutput = result.output.join('\n');
-        expect(initialOutput).toContain('小屋');
-
-        // Test movement. The command for an exit is the exit key itself.
-        const moveResult = GameCore.processCommand(result.newState, DATA, 'norr');
-        expect(moveResult.newState.loc).toBe('glömda_stigen');
-        const moveOutput = moveResult.output.join('\n');
-        expect(moveOutput).toContain('Du befinner dig på en övervuxen och nästan osynlig stig.');
+    it('should allow movement to gläntan', () => {
+        const result = GameCore.init(DATA);
+        // Move south from stugan to gläntan
+        const moveResult = GameCore.processCommand(result.newState, DATA, 'söder');
+        expect(moveResult.newState.loc).toBe('gläntan');
+        expect(moveResult.output.join(' ').toLowerCase()).toContain('glänta');
     });
 
     it('should allow taking an item', () => {
-        const initState = GameCore.init(DATA).newState;
-        // "ta" is a synonym for "take"
-        const takeResult = GameCore.processCommand(initState, DATA, 'ta dagbok');
-        expect(takeResult.newState.inventory).toContain('dagbok');
-        const takeOutput = takeResult.output.join('\n');
-        expect(takeOutput).toContain('Du plockar upp dagbok.');
+        const result = GameCore.init(DATA);
+        // Take flashlight which is in stugan
+        const takeResult = GameCore.processCommand(result.newState, DATA, 'ta ficklampa');
+        expect(takeResult.newState.inventory).toContain('ficklampa');
+        expect(takeResult.output.join(' ')).toContain('plockar upp ficklampa');
     });
 
-    it('should handle a multi-step navigation path', () => {
+    it('should handle flashlight toggle action', () => {
         let state = GameCore.init(DATA).newState;
+        state = GameCore.processCommand(state, DATA, 'ta ficklampa').newState;
 
-        state = GameCore.processCommand(state, DATA, 'norr').newState;
-        expect(state.loc).toBe('glömda_stigen');
+        const lightResult = GameCore.processCommand(state, DATA, 'tänd ficklampa');
+        expect(lightResult.output.join(' ')).toContain('tänder ficklampa');
 
-        state = GameCore.processCommand(state, DATA, 'norr').newState;
-        expect(state.loc).toBe('uråldriga_eken');
-
-        state = GameCore.processCommand(state, DATA, 'öster').newState;
-        expect(state.loc).toBe('vattendragets_källa');
+        // Verify item state change
+        expect(DATA.items['ficklampa'].state).toBe('På');
     });
 
-    it('should show a different description based on a condition', () => {
+    it('should handle multi-step navigation', () => {
         let state = GameCore.init(DATA).newState;
-        // Navigate to the cave entrance
-        state = GameCore.processCommand(state, DATA, 'norr').newState;
-        state = GameCore.processCommand(state, DATA, 'norr').newState;
-        state = GameCore.processCommand(state, DATA, 'öster').newState;
-        state = GameCore.processCommand(state, DATA, 'söder').newState;
-        state = GameCore.processCommand(state, DATA, 'öster').newState;
+        state = GameCore.processCommand(state, DATA, 'söder').newState; // gläntan
+        expect(state.loc).toBe('gläntan');
 
-        expect(state.loc).toBe('murkna_grottan_ingång');
+        state = GameCore.processCommand(state, DATA, 'väster').newState; // rävgryt
+        expect(state.loc).toBe('rävgryt');
 
-        // Enter the cave
-        const moveResult = GameCore.processCommand(state, DATA, 'in');
-        expect(moveResult.newState.loc).toBe('murkna_grottan_första_rummet');
-
-        // Check for the "dark" description
-        const moveOutput = moveResult.output.join('\\n');
-        expect(moveOutput).toContain('Mörkret är kompakt');
+        state = GameCore.processCommand(state, DATA, 'ned').newState; // rotsystemet
+        expect(state.loc).toBe('rotsystemet');
     });
 });
