@@ -1,19 +1,34 @@
 const items = {
-  "ficklampa": {
-    "desc": "En gammal ficklampa med repigt glas.",
+  "flashlight": {
+    "name": "Flashlight",
+    "desc": "An old flashlight with scratched glass.",
     "portable": true,
-    "state": "Av"             
+    "state": "off"
   },
-  "dagbok": {
-    "desc": "En sliten dagbok fylld med kryptiska marginalanteckningar.",
+  "diary": {
+    "name": "Diary",
+    "desc": "A worn diary full of cryptic notes in the margins. You could try reading it.",
     "portable": true
   },
-  "nyckel": {
-    "desc": "En tung nyckel täckt av rost. Kanske öppnar den något gammalt.",
+  "key": {
+    "name": "Key",
+    "desc": "A heavy key covered in rust. Perhaps it opens something old.",
     "portable": true
   },
-  "rep": {
-    "desc": "Ett starkt rep av tvinnad näver – luktar skog.",
+  "rope": {
+    "name": "Rope",
+    "desc": "A strong rope of twisted birch bark - it smells of forest.",
+    "portable": true,
+    "state": "loose"
+  },
+  "toolbox": {
+    "name": "Toolbox",
+    "desc": "A rusty toolbox with a heavy padlock. It looks like it has stood here for a hundred years.",
+    "portable": false
+  },
+  "map": {
+    "name": "Map",
+    "desc": "A hand-drawn map on yellowed paper. You could try reading it.",
     "portable": true
   }
 }

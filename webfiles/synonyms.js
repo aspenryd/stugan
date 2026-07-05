@@ -1,18 +1,31 @@
 const synonyms = {
-  // --- Verbs (must match your doXXX switch cases) ---
-  take:      ['ta', 'ta upp', 'plocka upp', 'plocka', 'plocka upp', 'ryck', 'grab'],
-  look:      ['titta på', 'titta', 'se', 'betrakta'],
-  survey:    ['titta runt', 'utforska', 'rundblick', 'runt', 'tittarunt'],
-  light:     ['tänd', 'tända', 'släck', 'släcka', 'ljus', 'lys', 'belys', 'skingra'],
-  inventory: ['inventering', 'inventera', 'inventarium', 'saker', 'bagage', 'föremål'],
-  move:      ['gå', 'gå till', 'gå söderut', 'gå norrut', 'gå österut', 'gå västerut', 'gå upp', 'gå ner', 'förflytta', 'kliv', 'move'],
-  help:      ['hjälp', '?', 'hjälp!'],
-  describe:  ['beskriv','granska'],
-  quit:      ['sluta', 'avsluta', 'lämna', 'exit'],
+  // --- Verbs (canonical names must match the GameCore verb switch) ---
+  take:      ['take', 'get', 'grab', 'pick', 'pick up', 'collect'],
+  drop:      ['drop', 'put down', 'discard'],
+  look:      ['look', 'look at', 'examine', 'inspect', 'view', 'check', 'l'],
+  survey:    ['survey', 'look around', 'around', 'exits', 'where'],
+  describe:  ['describe'],
+  light:     ['light', 'ignite', 'extinguish'],
+  use:       ['use', 'open', 'unlock', 'tie', 'fasten', 'attach', 'secure',
+              'listen', 'hear', 'search', 'read', 'turn', 'switch'],
+  inventory: ['inventory', 'inv', 'i', 'items', 'bag', 'belongings'],
+  move:      ['go', 'walk', 'move', 'head', 'run', 'climb', 'enter'],
+  help:      ['help', 'h', '?'],
+  quit:      ['quit', 'q', 'exit', 'end'],
 
-  // --- Items (map any typed word to your internal ID) ---
-  dagbok:    ['dagbok', 'bok'],
-  ficklampa: ['ficklampa', 'ficklampan', 'lampa', 'lampan'],
-  nyckel:    ['nyckel'],
-  rep:       ['rep', 'tamp', 'repet']
+  // --- Directions (canonical direction tokens used in place exits) ---
+  north: ['n'],
+  south: ['s'],
+  east:  ['e'],
+  west:  ['w'],
+  up:    ['u', 'upward', 'upstairs', 'ascend'],
+  down:  ['d', 'downward', 'downstairs', 'descend'],
+
+  // --- Items (map any typed word to the internal item id) ---
+  flashlight: ['flashlight', 'torch', 'lamp'],
+  diary:      ['diary', 'book', 'journal'],
+  key:        ['key'],
+  rope:       ['rope', 'line', 'cord'],
+  toolbox:    ['toolbox', 'box', 'chest'],
+  map:        ['map', 'chart']
 };

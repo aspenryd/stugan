@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(npm test)",
+      "PowerShell(node tools/create-world.js --spec generated/whispering-pines/world.json --out generated/roundtrip)",
+      "PowerShell(node -e \"const {loadWorld}=require\\('./tools/lib/load-world'\\); const w=loadWorld\\('generated/roundtrip'\\); console.log\\('roundtrip loads OK:', Object.keys\\(w.places\\).length, 'places, goal:', w.meta.goal\\)\")"
+    ]
+  }
+}

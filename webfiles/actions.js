@@ -1,87 +1,139 @@
 const actions = {
   "*": [
     {
-      "pattern": "(släck|stäng av|dölj|tänd|tand|lys|light).*ficklampa",
-      "conditions": ["not_has:ficklampa"],
-      "response": "Du har ingen ficklampa.",
+      "pattern": "\\b(light|turn on|switch on|ignite)\\b.*\\b(flashlight|torch|lamp)\\b",
+      "conditions": ["not_has:flashlight"],
+      "response": "You don't have a flashlight.",
+      "hint": "turn on flashlight"
     },
     {
-      "pattern": "(tänd|tand|lys|light).*ficklampa",
-      "conditions": ["has:ficklampa", "item:ficklampa:På"],
-      "response": "Ficklampan är redan tänd.",
+      "pattern": "\\b(turn off|switch off|extinguish|douse)\\b.*\\b(flashlight|torch|lamp)\\b",
+      "conditions": ["not_has:flashlight"],
+      "response": "You don't have a flashlight.",
+      "hint": "turn off flashlight"
     },
     {
-      "pattern": "(tänd|tand|lys|light).*ficklampa",
-      "conditions": ["has:ficklampa", "item:ficklampa:Av"],
-      "response": "Du tänder ficklampan. En smal ljuskägla skär genom mörkret.",
-      "state_change": { "item": "ficklampa", "state": "På" }
+      "pattern": "\\b(light|turn on|switch on|ignite)\\b.*\\b(flashlight|torch|lamp)\\b",
+      "conditions": ["has:flashlight", "item:flashlight:on"],
+      "response": "The flashlight is already on.",
+      "hint": "turn on flashlight"
     },
     {
-      "pattern": "(släck|stäng av|dölj).*ficklampa",
-      "conditions": ["has:ficklampa", "item:ficklampa:Av"],
-      "response": "Du fumlar efter avstängningsknappen men hittar den inte efterom ficklampan redan är släckt.",
+      "pattern": "\\b(light|turn on|switch on|ignite)\\b.*\\b(flashlight|torch|lamp)\\b",
+      "conditions": ["has:flashlight", "item:flashlight:off"],
+      "response": "You turn on the flashlight. A narrow beam of light cuts through the dark.",
+      "state_change": { "item": "flashlight", "state": "on" },
+      "hint": "turn on flashlight"
     },
     {
-      "pattern": "(släck|stäng av|dölj).*ficklampa",
-      "conditions": ["has:ficklampa", "item:ficklampa:På"],
-      "response": "Du släcker ficklampan. Mörkret sluter sig om dig.",
-      "state_change": { "item": "ficklampa", "state": "Av" }
+      "pattern": "\\b(turn off|switch off|extinguish|douse)\\b.*\\b(flashlight|torch|lamp)\\b",
+      "conditions": ["has:flashlight", "item:flashlight:off"],
+      "response": "You fumble for the switch, but the flashlight is already off.",
+      "hint": "turn off flashlight"
     },
     {
-      "pattern": "(öppna|läs|granska|titta).*dagbok",
-      "conditions": ["has:dagbok"],
-      "response": "En sliten dagbok fylld med kryptiska marginalanteckningar.",
+      "pattern": "\\b(turn off|switch off|extinguish|douse)\\b.*\\b(flashlight|torch|lamp)\\b",
+      "conditions": ["has:flashlight", "item:flashlight:on"],
+      "response": "You turn off the flashlight. The darkness closes in around you.",
+      "state_change": { "item": "flashlight", "state": "off" },
+      "hint": "turn off flashlight"
+    },
+    {
+      "pattern": "\\b(open|read|study)\\b.*\\b(diary|book|journal)\\b",
+      "conditions": ["has:diary"],
+      "response": "A worn diary full of cryptic notes. One line is underlined: 'What the cellar hides, only light will find.'",
+      "hint": "read diary"
+    },
+    {
+      "pattern": "\\b(read|study)\\b.*\\b(map|chart)\\b",
+      "conditions": ["has:map"],
+      "response": "A hand-drawn sketch of a deep shaft beneath the engine shed. Someone has written: 'Tie the rope to the iron beam.'",
+      "hint": "read map"
     }
   ],
-  "stugan": [
+  "cabin": [
     {
-      "pattern": "(titta|look|kika).*f(o|ö)nst(er|ret)",
-      "response": "Fönsterrutan är för smutsig för att se något tydligt. Du anar bara månljuset där ute."
+      "pattern": "\\b(look|peer|gaze)\\b.*\\bwindow\\b",
+      "response": "The windowpane is too grimy to see anything clearly. You can only make out the moonlight outside.",
+      "hint": "look at window"
     }
   ],
-  "källaren": [
+  "cellar": [
     {
-      "pattern": "(lys|titta|leta)",
-      "conditions": ["item:ficklampa:På"],
-      "response": "I ficklampans sken ser du en rostig nyckel glimma på jordgolvet.",
-      "reveals": ["nyckel"]
-    }
-  ],
-  "lokstall": [
-    {
-      "pattern": "(använd|knyt|fäst).*rep",
-      "conditions": ["has:rep"],
-      "response": "Du knyter repet runt en rostig balk och kastar ner änden i mörkret.",
-      "state_change": { "item": "rep", "state": "Fäst" },
-      "unlock_exits": { "ned": "myreld" }
+      "pattern": "\\b(search|sweep|scan|feel|shine)\\b",
+      "conditions": ["has:key"],
+      "response": "You search the cellar again, but find nothing more of interest.",
+      "hint": "search"
     },
     {
-      "pattern": "ned",
-      "conditions": ["not_has:rep"],
-      "response": "Det är för brant. Du behöver något att klättra i."
+      "pattern": "\\b(search|sweep|scan|feel|shine)\\b",
+      "conditions": ["has:flashlight", "item:flashlight:on"],
+      "response": "In the beam of the flashlight you see a rusty key glinting on the dirt floor.",
+      "reveals": ["key"],
+      "hint": "search"
     },
     {
-      "pattern": "ned",
-      "conditions": ["has:rep", "item:rep:Av"],
-      "response": "Det är för brant. Du har ett rep, men du måste fästa det först."
+      "pattern": "\\b(search|sweep|scan|feel|shine)\\b",
+      "response": "It is pitch black down here. You fumble around but find nothing. You need some light.",
+      "hint": "search"
     }
   ],
-  "myreld": [
+  "lakeside": [
     {
-      "pattern": ".*",
-      "response": "Du har nått Skogens Hjärta. Din resa slutar här... för den här gången. (Spelet är slut!)"
-    }
-  ],
-  "sjökanten": [
-    {
-      "pattern": "(lyssna|listen|hör).*näck",
-      "conditions": ["item:ficklampa:Av"],
-      "response": "En vemodig 8‑bitarsmelodi svävar över vattnet när du lyssnar."
+      "pattern": "\\b(listen|hear)\\b",
+      "conditions": ["item:flashlight:on"],
+      "response": "You gaze across the mirror-still tarn, but hear nothing except the sigh of the wind.",
+      "hint": "listen"
     },
     {
-      "pattern": "(lyssna|listen|hör).*näck",
-      "conditions": ["item:ficklampa:På"],
-      "response": "Du tittar ut över den spegelblanka sjön men hör inget annat än vindens sus."
+      "pattern": "\\b(listen|hear)\\b",
+      "response": "A mournful eight-bit melody drifts across the water as you listen. Something very old lives in this lake.",
+      "hint": "listen"
+    }
+  ],
+  "engineshed": [
+    {
+      "pattern": "\\b(open|unlock)\\b.*\\b(toolbox|box|chest)\\b",
+      "conditions": ["has:key"],
+      "response": "The rusty key turns with a squeal and the padlock springs open. Inside the toolbox you find a folded map.",
+      "reveals": ["map"],
+      "hint": "open toolbox"
+    },
+    {
+      "pattern": "\\b(open|unlock|force)\\b.*\\b(toolbox|box|chest)\\b",
+      "response": "The toolbox is locked. A heavy, rusty padlock holds it shut.",
+      "hint": "open toolbox"
+    },
+    {
+      "pattern": "\\b(tie|fasten|attach|secure|use)\\b.*\\b(rope|line|cord)\\b",
+      "conditions": ["has:rope", "item:rope:loose"],
+      "response": "You tie the rope around a rusty iron beam and throw the end down into the darkness of the shaft.",
+      "state_change": { "item": "rope", "state": "tied" },
+      "reveals_exit": { "direction": "down", "destination": "forestheart" },
+      "hint": "tie rope"
+    },
+    {
+      "pattern": "\\b(tie|fasten|attach|secure|use)\\b.*\\b(rope|line|cord)\\b",
+      "conditions": ["has:rope", "item:rope:tied"],
+      "response": "The rope is already tied securely to the beam.",
+      "hint": "tie rope"
+    },
+    {
+      "pattern": "\\b(tie|fasten|attach|secure|use)\\b.*\\b(rope|line|cord)\\b",
+      "response": "You have no rope to tie.",
+      "hint": "tie rope"
+    },
+    {
+      "pattern": "^\\s*(go\\s+|climb\\s+|head\\s+)?(d|down|downward|descend)\\b",
+      "conditions": ["has:rope", "item:rope:loose"],
+      "response": "The shaft is far too steep. You have a rope, but you need to fasten it to something first.",
+      "hint": "down"
+    },
+    {
+      "pattern": "^\\s*(go\\s+|climb\\s+|head\\s+)?(d|down|downward|descend)\\b",
+      "conditions": ["not_has:rope"],
+      "response": "The shaft is far too steep to climb. You need something to climb down with.",
+      "hint": "down"
     }
   ]
 }

@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="sv">
+<html lang="en">
 
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Stugan: Skogens Hjärta</title>
-  <!-- CRT‑font -->
+  <title>The Cabin: Heart of the Forest</title>
+  <!-- CRT font -->
   <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet" />
   <style>
     /* --- Reset & base ---------------------------------------------------- */
@@ -190,16 +190,16 @@
 <body>
   <!-- ========================== HERO / LANDING ========================= -->
   <section class="hero" id="landing">
-    <img src="cover.png" alt="Omslagsbild: Stugan – Skogens Hjärta" />
-    <h1>STUGAN: SKOGENS HJÄRTA</h1>
+    <img src="cover.png" alt="Cover art: The Cabin - Heart of the Forest" />
+    <h1>THE CABIN: HEART OF THE FOREST</h1>
     <p style="max-width: 740px">
-      Våga öppna dörren igen! <em>Stugan – Skogens Hjärta</em> är den inofficiella
-      uppföljaren till Sveriges första kultförklarade textäventyr. Utforska ett
-      expanderat parser‑universum där varje rad du skriver formar skogens puls.
-      Med retro‑läge, adaptiv nostalgi‑AI och dynamiska slut blir detta både en
-      resa bakåt och ett steg framåt för hela genren.
+      Dare to open the door again! <em>The Cabin - Heart of the Forest</em> is the
+      unofficial sequel to Sweden's first cult-classic text adventure. Explore an
+      expanded parser universe where every line you type shapes the pulse of the
+      forest. With retro mode, adaptive nostalgia AI and dynamic endings, this is
+      both a journey back and a step forward for the whole genre.
     </p>
-    <button class="cta-btn" id="startBtn">Spela</button>
+    <button class="cta-btn" id="startBtn">Play</button>
   </section>
 
   <!-- ============================ GAME UI ============================== -->
@@ -207,17 +207,21 @@
     <div class="stats" id="statsBar"></div>
     <div class="viewport" id="viewport" aria-live="polite"></div>
     <form class="input-bar" id="commandForm" autocomplete="off">
-      <input id="commandInput" type="text" placeholder="Skriv ett kommando…" />
+      <input id="commandInput" type="text" placeholder="Type a command…" />
       <button type="submit">&#x27A4;</button>
     </form>
   </main>
 
-  <!-- ===  ===  ===  ===  ===  ===  ===  ===  ===  = GAME ENGINE ===  ===  ===  ===  ===  ===  ===  ===  = -->
-  <!--Load data modules locally-->
+  <!-- ============================ GAME ENGINE =========================== -->
+  <!-- World data (swap these files to load another world or language) -->
   <script src="places.js"></script>
   <script src="items.js"></script>
   <script src="synonyms.js"></script>
   <script src="actions.js"></script>
+  <script src="strings.js"></script>
+  <script src="meta.js"></script>
+  <!-- Engine: core.js is pure logic (also used by tests), engine.js is the DOM layer -->
+  <script src="core.js"></script>
   <script src="engine.js"></script>
 </body>
 

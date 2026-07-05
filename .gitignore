@@ -23,5 +23,8 @@ pnpm-debug.log*
 # Jest
 /coverage
 
+# Generated worlds (world creator output)
+/generated
+
 # VSCode
 .vscode/
