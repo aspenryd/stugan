@@ -104,3 +104,17 @@ node tools/create-world.js --spec myworld.json --out generated/custom --playable
 
 To make a generated world the shipped one, copy its `.js` files into
 `webfiles/` - the tests will then validate that world.
+
+## Deployment
+
+The site is deployed to Azure Static Web Apps via a `StaticSites` folder that
+lives next to this repo (the old GitHub Actions deploy was removed when its
+Azure credentials expired):
+
+1. Copy the contents of `webfiles/` to `..\StaticSites\source\stugan`
+2. Run `..\StaticSites\deploy_staticweb.bat` (uses the SWA CLI with the
+   deployment token from `..\StaticSites\.env`)
+
+Or just run **`deploy.bat`** in the repo root, which does both - and runs the
+test suite first, aborting the deploy if anything fails. Note that the copy
+mirrors `webfiles/` exactly (stale files in the target are removed).
